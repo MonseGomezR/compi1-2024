@@ -12,8 +12,12 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class GUI extends JFrame {
+
     private JTree fileTree;
+    private JTextArea queryTextArea;
+    private JTextArea resultTextArea;
     private SQLManager projectManager;
+    File ruta = new File(System.getProperty(("user.dir")) );
     public GUI() {
         super("Emulador SQL");
         setSize(800, 600);
@@ -22,11 +26,31 @@ public class GUI extends JFrame {
         projectManager = new SQLManager();
 
         JPanel mainPanel = new JPanel(new BorderLayout());
-        // Crear el panel derecho (vacío por ahora)
-        JPanel emptyPanel = new JPanel();
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(ruta.getName());
+        DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);
+        buildFileTree(ruta, rootNode);
 
         fileTree = new JTree();
+        fileTree.setModel(treeModel);
+        fileTree.expandRow(0);
+        fileTree.setRootVisible(true);
+
         mainPanel.add(new JScrollPane(fileTree), BorderLayout.WEST);
+
+        JPanel queryPanel = new JPanel(new BorderLayout());
+        JLabel queryLabel = new JLabel("Consulta SQL:");
+        queryTextArea = new JTextArea(5, 40);
+        queryPanel.add(queryLabel, BorderLayout.NORTH);
+        queryPanel.add(new JScrollPane(queryTextArea), BorderLayout.CENTER);
+        mainPanel.add(queryPanel, BorderLayout.CENTER);
+
+        JPanel resultPanel = new JPanel(new BorderLayout());
+        JLabel resultLabel = new JLabel("Resultados:");
+        resultTextArea = new JTextArea(10, 40);
+        resultTextArea.setEditable(false);
+        resultPanel.add(resultLabel, BorderLayout.NORTH);
+        resultPanel.add(new JScrollPane(resultTextArea), BorderLayout.CENTER);
+        mainPanel.add(resultPanel, BorderLayout.SOUTH);
 
         JButton createProjectButton = new JButton("Crear Proyecto");
         createProjectButton.addActionListener(new ActionListener() {
@@ -38,12 +62,20 @@ public class GUI extends JFrame {
         mainPanel.add(createProjectButton, BorderLayout.NORTH);
 
 
-        // Crear el JSplitPane con el árbol de archivos y el panel derecho
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mainPanel, emptyPanel);
-        splitPane.setDividerLocation(200); // Establecer la posición inicial de la barra divisoria
-        splitPane.setOneTouchExpandable(true); // Permitir que el usuario colapse el panel
+        getContentPane().add(mainPanel);
+    }
 
-        getContentPane().add(splitPane);
+    private void buildFileTree(File ruta, DefaultMutableTreeNode rootNode) {
+        if(ruta.isDirectory()) {
+            File[] files = ruta.listFiles();
+            if(files!=null){
+                for(File file : files) {
+                    DefaultMutableTreeNode cnode = new DefaultMutableTreeNode(file.getName());
+                    rootNode.add(cnode);
+                    buildFileTree(file, cnode);
+                }
+            }
+        }
     }
 
     private void loadProjectStructure() {
@@ -56,10 +88,6 @@ public class GUI extends JFrame {
         try (BufferedReader reader = new BufferedReader(new FileReader(ideFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                // Procesar cada línea del archivo .ide
-                // Aquí necesitarás escribir la lógica para parsear el archivo .ide y construir la estructura del proyecto
-                // La estructura del proyecto puede ser una lista de carpetas y archivos representados como nodos del árbol
-                // Por ahora, simplemente agregaremos un nodo de prueba al árbol
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode(line.trim());
                 root.add(node);
             }
@@ -77,7 +105,6 @@ public class GUI extends JFrame {
         if (result == JFileChooser.APPROVE_OPTION) {
             String projectPath = fileChooser.getSelectedFile().getAbsolutePath();
             projectManager.openProject(projectPath);
-            // También podríamos cargar la estructura del proyecto en el árbol de archivos aquí
         }
     }
 
@@ -88,7 +115,6 @@ public class GUI extends JFrame {
         if (result == JFileChooser.APPROVE_OPTION) {
             String projectPath = fileChooser.getSelectedFile().getAbsolutePath();
             projectManager.createProject(projectPath);
-            // También podríamos actualizar la interfaz de usuario con la estructura del proyecto aquí
         }
     }
 }

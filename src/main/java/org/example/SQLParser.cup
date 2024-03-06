@@ -1,0 +1,24 @@
+package org.example.sql.parser;
+
+import java_cup.runtime.*;
+
+parser code {:
+    public void report_error(String message, Object info) {
+        System.err.println("Error: " + message);
+    }
+:};
+
+terminal STRING_LITERAL, NUMBER_LITERAL, IDENTIFIER, SEMICOLON, STAR, COMMA, EQUALS, LESS_THAN, GREATER_THAN, LESS_THAN_OR_EQUALS, GREATER_THAN_OR_EQUALS, NOT_EQUALS;
+terminal SELECT, FROM, FILTER;
+
+precedence left EQUALS, LESS_THAN, GREATER_THAN, LESS_THAN_OR_EQUALS, GREATER_THAN_OR_EQUALS, NOT_EQUALS;
+
+start with Query;
+
+public class SQLParser {
+    public static void main(String[] args) throws Exception {
+        SQLLexer lexer = new SQLLexer(new java_cup.runtime.Scanner(System.in));
+        parser parser = new parser(lexer);
+        parser.parse();
+    }
+}

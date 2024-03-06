@@ -12,13 +12,11 @@ public class SQLManager {
     }
 
     public void openProject(String projectPath) {
-        // Verificar si ya hay un proyecto abierto
         if (currentProjectPath != null) {
             JOptionPane.showMessageDialog(null, "Ya hay un proyecto abierto. Cierra el proyecto actual antes de abrir otro.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Leer la estructura del proyecto desde el archivo .ide
         File ideFile = new File(projectPath + File.separator + "project.ide");
         if (!ideFile.exists()) {
             JOptionPane.showMessageDialog(null, "El archivo .ide del proyecto no existe.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -41,21 +39,16 @@ public class SQLManager {
             return;
         }
 
-        // Establecer la ruta del proyecto actual
         this.currentProjectPath = projectPath;
-
-        // Notificar que el proyecto se ha abierto correctamente
         JOptionPane.showMessageDialog(null, "Proyecto abierto correctamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void createProject(String projectPath) {
-        // Verificar si ya hay un proyecto abierto
         if (currentProjectPath != null) {
             JOptionPane.showMessageDialog(null, "Ya hay un proyecto abierto. Cierra el proyecto actual antes de crear uno nuevo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Crear la carpeta del proyecto
         File projectFolder = new File(projectPath);
         if (!projectFolder.exists()) {
             if (!projectFolder.mkdirs()) {
@@ -64,14 +57,13 @@ public class SQLManager {
             }
         }
 
-        // Crear el archivo .ide del proyecto
         File ideFile = new File(projectPath + File.separator + "project.ide");
         try {
             if (!ideFile.createNewFile()) {
                 JOptionPane.showMessageDialog(null, "Error al crear el archivo .ide del proyecto.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            // Escribir la estructura inicial del proyecto en el archivo .ide
+
             try (FileWriter writer = new FileWriter(ideFile)) {
                 writer.write("<PROYECTO nombre=\"NuevoProyecto\">\n");
                 writer.write("</PROYECTO>\n");
@@ -82,10 +74,7 @@ public class SQLManager {
             return;
         }
 
-        // Establecer la ruta del proyecto actual
         this.currentProjectPath = projectPath;
-
-        // Notificar que el proyecto se ha creado correctamente
         JOptionPane.showMessageDialog(null, "Proyecto creado correctamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -94,12 +83,6 @@ public class SQLManager {
             JOptionPane.showMessageDialog(null, "No hay ningún proyecto abierto.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        // Implementar la lógica para ejecutar consultas SQL en los archivos CSV del proyecto
-        // Aquí puedes agregar la lógica para procesar y ejecutar la consulta SQL en los archivos CSV
-        // Puedes usar librerías como OpenCSV o implementar tu propio analizador SQL para este propósito
-
-        // Por ahora, simplemente mostraremos un mensaje de confirmación
         JOptionPane.showMessageDialog(null, "Consulta SQL ejecutada correctamente:\n" + query, "Información", JOptionPane.INFORMATION_MESSAGE);
     }
 
